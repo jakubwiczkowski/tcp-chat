@@ -17,16 +17,26 @@
 #include <strings.h> // bzero()
 #include <sys/socket.h>
 #include <unistd.h> // read(), write(), close()
+
+#include "src/codec/uint32_codec.h"
 #define MAX 80
 #define PORT 45678
 #define SA struct sockaddr
 
 void func(int sockfd) {
-    char buff[1] = { 0 };
+    uint32_t packet_id = 15012;
+    bytebuf buffer;
+
+    UINT32_CODEC.encode(buffer, packet_id);
+
+    std::cout << "buff: " << buffer.size() << std::endl;
+
     for (;;) {
-        write(sockfd, buff, sizeof(buff));
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        auto x = write(sockfd, buffer.to_raw().get(), buffer.size());
+        std::cout << x << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     }
+
 }
 
 int main() {

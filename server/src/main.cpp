@@ -5,19 +5,49 @@
 #include <cstring>
 #include <sys/socket.h>
 
+#include <iomanip>
+
 #include "server/server.h"
-#define MAX 80
+#include "src/codec/uint32_codec.h"
+
+void start_server() {
+}
+
+void test() {
+    for (uint32_t test = 891264; test < 891264 + 100; test++) {
+        bytebuf buffer(4);
+        UINT32_CODEC.encode(buffer, test);
+
+        std::cout << "tested value: " << std::dec << test << " (" << std::hex << test << ")" << std::endl;
+        std::cout << "byte representation: ";
+        for (int i = 0; i < 4; i++) {
+            std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(buffer[i]) << " ";
+        }
+        std::cout << std::endl;
+
+        uint32_t decoded = UINT32_CODEC.decode(buffer);
+
+        std::cout << "decoded: " << std::dec << decoded << std::endl;
+        std::cout << (decoded == test) << std::endl << std::endl;
+    }
+}
 
 int main() {
     server server(INADDR_ANY, 45678);
 
     server.set_handling_function([](int connfd, sockaddr_in addr, socklen_t addr_len) {
-        char packet_id[1];
-        ssize_t read_result = read(connfd, packet_id, sizeof(packet_id));
+        unsigned char packet_id_buffer_raw[4];
+        ssize_t read_result = read(connfd, packet_id_buffer_raw, sizeof(packet_id_buffer_raw));
 
-        if (read_result == -1) return false;
+        std::cout << "read result: " << read_result << std::endl;
 
-        std::cout << "PACKET ID: " << +packet_id[0] << std::endl;
+        if (read_result == -1 || read_result == 0) return false;
+
+        bytebuf packet_id_buffer(packet_id_buffer_raw, read_result);
+
+        uint32_t packet_id = UINT32_CODEC.decode(packet_id_buffer);
+
+        std::cout << "PACKET ID: " << packet_id << std::endl;
 
         return true;
     });
@@ -54,24 +84,4 @@ int main() {
     server.stop();
 
     return 0;
-    // int sockfd, connfd;
-    // socklen_t len;
-    // sockaddr_in servaddr, cli;
-    //
-    // // Now server is ready to listen and verification
-    //
-    // // Accept the data packet from client and verification
-    // connfd = accept(sockfd, (SA*)&cli, &len);
-    // if (connfd < 0) {
-    //     printf("server accept failed...\n");
-    //     exit(0);
-    // }
-    // else
-    //     printf("server accept the client...\n");
-    //
-    // // Function for chatting between client and server
-    // func(connfd);
-    //
-    // // After chatting close the socket
-    // close(sockfd);
 }

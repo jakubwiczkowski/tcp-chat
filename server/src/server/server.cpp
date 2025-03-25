@@ -3,6 +3,8 @@
 #include <strings.h>
 #include <unistd.h>
 
+#include <iostream>
+
 server::server(uint32_t address, uint16_t port) {
     this->address = address;
     this->port = port;
@@ -48,15 +50,21 @@ bool server::start_listen() const {
 }
 
 void server::start_listen_thread() {
+    this->is_running = true;
+
     this->listening_thread = std::thread([&] {
-        sockaddr_in cli;
-        socklen_t len;
+        while (this->is_running) {
+            sockaddr_in cli;
+            socklen_t len;
 
-        int connfd = accept(sockfd, reinterpret_cast<sockaddr*>(&cli), &len);
+            int connfd = accept(sockfd, reinterpret_cast<sockaddr*>(&cli), &len);
 
-        if (connfd < 0) return;
+            // std::cout << connfd << std::endl;
 
-        handle_connection(connfd, cli, len);
+            if (connfd < 0) continue;
+
+            handle_connection(connfd, cli, len);
+        }
     });
 
     this->listening_thread.join();
@@ -65,7 +73,7 @@ void server::start_listen_thread() {
 void server::handle_connection(int connfd, sockaddr_in client_address,
                                socklen_t address_length) const {
     std::thread connection_thread([&] {
-        while (true) {
+        while (this->is_running) {
             bool result = connection_handle_fn(connfd, client_address, address_length);
 
             if (!result) break;
@@ -75,6 +83,7 @@ void server::handle_connection(int connfd, sockaddr_in client_address,
     connection_thread.join();
 }
 
-void server::stop() const {
+void server::stop() {
+    this->is_running = false;
     close(this->sockfd);
 }

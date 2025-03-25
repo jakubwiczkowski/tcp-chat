@@ -24,6 +24,8 @@ private:
 
     handle_fn connection_handle_fn;
 
+    std::atomic_bool is_running = false;
+
 public:
     server(uint32_t address, uint16_t port);
     ~server();
@@ -40,7 +42,7 @@ public:
 
     void handle_connection(int connfd, sockaddr_in client_address, socklen_t address_length) const;
 
-    void stop() const;
+    void stop();
 };
 
 
