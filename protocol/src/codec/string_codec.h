@@ -39,4 +39,6 @@ public:
     }
 };
 
+const static string_codec STRING_CODEC;
+
 #endif //STRING_CODEC_H

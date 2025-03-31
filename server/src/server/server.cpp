@@ -3,8 +3,6 @@
 #include <strings.h>
 #include <unistd.h>
 
-#include <iostream>
-
 server::server(uint32_t address, uint16_t port) {
     this->address = address;
     this->port = port;
@@ -15,6 +13,10 @@ server::~server() {
 
 void server::set_handling_function(handle_fn handle_fn) {
     this->connection_handle_fn = std::move(handle_fn);
+}
+
+void server::set_client_create_function(client_fn client_fn) {
+    this->client_create_fn = std::move(client_fn);
 }
 
 uint32_t server::get_address() const {
@@ -71,12 +73,21 @@ void server::start_listen_thread() {
 }
 
 void server::handle_connection(int connfd, sockaddr_in client_address,
-                               socklen_t address_length) const {
+                               socklen_t address_length) {
+    this->client_map.run([&](std::unordered_map<int, client>& value) {
+        value.emplace(connfd, this->client_create_fn(connfd, client_address));
+    });
+
     std::thread connection_thread([&] {
         while (this->is_running) {
             bool result = connection_handle_fn(connfd, client_address, address_length);
 
-            if (!result) break;
+            if (!result) {
+                this->client_map.run([&](std::unordered_map<int, client>& value) {
+                    value.erase(connfd);
+                });
+                break;
+            }
         }
     });
 

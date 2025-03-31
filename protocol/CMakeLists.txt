@@ -14,8 +14,12 @@ add_library(protocol STATIC
         src/codec/codec.h
         src/codec/uint32_codec.h
         src/codec/string_codec.h
-        src/butebuf/bytebuf.cpp
-        src/butebuf/bytebuf.h)
+        src/bytebuf/bytebuf.cpp
+        src/bytebuf/bytebuf.h
+        src/packet/packet.h
+        src/packet/serverbound/config/set_name.h
+        src/packet/clientbound/config/acknowledge_name.h
+        src/codec/uint8_codec.h)
 
 target_include_directories(protocol PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

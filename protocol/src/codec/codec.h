@@ -1,6 +1,6 @@
 #ifndef CODEC_H
 #define CODEC_H
-#include "src/butebuf/bytebuf.h"
+#include "src/bytebuf/bytebuf.h"
 
 
 template<typename T>

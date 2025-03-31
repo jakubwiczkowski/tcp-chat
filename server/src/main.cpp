@@ -7,6 +7,7 @@
 
 #include <iomanip>
 
+#include "chat/chat_client.h"
 #include "server/server.h"
 #include "src/codec/uint32_codec.h"
 
@@ -34,6 +35,10 @@ void test() {
 
 int main() {
     server server(INADDR_ANY, 45678);
+
+    server.set_client_create_function([](int connfd, sockaddr_in addr) {
+        return chat_client(connfd, addr);
+    });
 
     server.set_handling_function([](int connfd, sockaddr_in addr, socklen_t addr_len) {
         unsigned char packet_id_buffer_raw[4];
