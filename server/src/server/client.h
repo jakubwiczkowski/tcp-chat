@@ -3,15 +3,23 @@
 
 #include "src/bytebuf/bytebuf.h"
 #include <unistd.h>
+#include <arpa/inet.h>
 #include <netinet/in.h>
 
 
 class client {
     int connfd;
     sockaddr_in address;
+    socklen_t address_length;
+    std::string address_human_readable;
 
 public:
-    explicit client(int connfd, sockaddr_in address): connfd(connfd), address(address) {}
+    explicit client(int connfd, sockaddr_in address, socklen_t address_length):
+        connfd(connfd),
+        address(address),
+        address_length(address_length),
+        address_human_readable(sockaddr_to_string(address)) {
+    }
 
     ssize_t send(const bytebuf& buffer) const {
         return write(this->connfd, buffer.to_raw().get(), buffer.size());
@@ -24,8 +32,17 @@ public:
     [[nodiscard]] sockaddr_in get_address() const {
         return this->address;
     }
-};
 
+    [[nodiscard]] std::string get_address_readable() const {
+        return this->address_human_readable;
+    }
+
+    static std::string sockaddr_to_string(const sockaddr_in& addr) {
+        char ipStr[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &addr.sin_addr, ipStr, INET_ADDRSTRLEN);
+        return std::string(ipStr) + ":" + std::to_string(ntohs(addr.sin_port));
+    }
+};
 
 
 #endif //CLIENT_H

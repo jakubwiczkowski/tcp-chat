@@ -5,7 +5,7 @@
 #include "src/codec/string_codec.h"
 #include "src/codec/uint32_codec.h"
 
-namespace serverbound {
+namespace config::serverbound {
 
 class set_name final : public packet {
     uint32_t packet_id;

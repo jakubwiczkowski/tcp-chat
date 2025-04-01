@@ -19,7 +19,8 @@ add_library(protocol STATIC
         src/packet/packet.h
         src/packet/serverbound/config/set_name.h
         src/packet/clientbound/config/acknowledge_name.h
-        src/codec/uint8_codec.h)
+        src/codec/uint8_codec.h
+        src/packet/state.h)
 
 target_include_directories(protocol PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 

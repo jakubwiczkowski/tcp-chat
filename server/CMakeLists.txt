@@ -4,13 +4,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(server src/main.cpp
         src/server/server.cpp
         src/server/server.h
-        src/server/client.cpp
         src/server/client.h
         src/sync/sync.h
         src/chat/chat_client.cpp
         src/chat/chat_client.h
         src/chat/chat_server.cpp
-        src/chat/chat_server.h)
+        src/chat/chat_server.h
+        src/logger/logger.cpp
+        src/logger/logger.h)
 
 target_link_libraries(server PRIVATE protocol)
 target_include_directories(server PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

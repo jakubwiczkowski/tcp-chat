@@ -11,7 +11,7 @@ public:
     }
 
     bool handle_client(chat_client& client) override;
-    chat_client create_client(int connfd, sockaddr_in addr) override;
+    chat_client create_client(int connfd, sockaddr_in addr, socklen_t addr_len) override;
 };
 
 

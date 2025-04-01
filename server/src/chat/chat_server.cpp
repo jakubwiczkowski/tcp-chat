@@ -23,7 +23,9 @@ bool chat_server::handle_client(chat_client& client) {
     return true;
 }
 
-chat_client chat_server::create_client(int connfd, sockaddr_in addr) {
+chat_client chat_server::create_client(const int connfd,
+                                       const sockaddr_in addr,
+                                       const socklen_t addr_len) {
     std::cout << "create client " << connfd << std::endl;
-    return chat_client(connfd, addr);
+    return chat_client(connfd, addr, addr_len);
 }

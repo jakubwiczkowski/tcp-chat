@@ -4,7 +4,7 @@
 #include "src/codec/uint8_codec.h"
 #include "src/packet/packet.h"
 
-namespace clientbound {
+namespace config::clientbound {
 
 class acknowledge_name final : public packet {
     uint32_t packet_id;
