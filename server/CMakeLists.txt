@@ -8,7 +8,9 @@ add_executable(server src/main.cpp
         src/server/client.h
         src/sync/sync.h
         src/chat/chat_client.cpp
-        src/chat/chat_client.h)
+        src/chat/chat_client.h
+        src/chat/chat_server.cpp
+        src/chat/chat_server.h)
 
 target_link_libraries(server PRIVATE protocol)
 target_include_directories(server PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

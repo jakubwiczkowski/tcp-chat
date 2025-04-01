@@ -8,6 +8,7 @@
 #include <iomanip>
 
 #include "chat/chat_client.h"
+#include "chat/chat_server.h"
 #include "server/server.h"
 #include "src/codec/uint32_codec.h"
 
@@ -19,10 +20,12 @@ void test() {
         bytebuf buffer(4);
         UINT32_CODEC.encode(buffer, test);
 
-        std::cout << "tested value: " << std::dec << test << " (" << std::hex << test << ")" << std::endl;
+        std::cout << "tested value: " << std::dec << test << " (" << std::hex <<
+            test << ")" << std::endl;
         std::cout << "byte representation: ";
         for (int i = 0; i < 4; i++) {
-            std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(buffer[i]) << " ";
+            std::cout << std::hex << std::setw(2) << std::setfill('0') <<
+                static_cast<unsigned int>(buffer[i]) << " ";
         }
         std::cout << std::endl;
 
@@ -34,28 +37,28 @@ void test() {
 }
 
 int main() {
-    server server(INADDR_ANY, 45678);
+    chat_server server(INADDR_ANY, 45678);
 
-    server.set_client_create_function([](int connfd, sockaddr_in addr) {
-        return chat_client(connfd, addr);
-    });
+    // server.set_client_create_function([](int connfd, sockaddr_in addr) {
+    // return chat_client(connfd, addr);
+    // });
 
-    server.set_handling_function([](int connfd, sockaddr_in addr, socklen_t addr_len) {
-        unsigned char packet_id_buffer_raw[4];
-        ssize_t read_result = read(connfd, packet_id_buffer_raw, sizeof(packet_id_buffer_raw));
+    // server.set_handling_function([](int connfd, sockaddr_in addr, socklen_t addr_len) {
+    // unsigned char packet_id_buffer_raw[4];
+    // ssize_t read_result = read(connfd, packet_id_buffer_raw, sizeof(packet_id_buffer_raw));
 
-        std::cout << "read result: " << read_result << std::endl;
+    // std::cout << "read result: " << read_result << std::endl;
 
-        if (read_result == -1 || read_result == 0) return false;
+    // if (read_result == -1 || read_result == 0) return false;
 
-        bytebuf packet_id_buffer(packet_id_buffer_raw, read_result);
+    // bytebuf packet_id_buffer(packet_id_buffer_raw, read_result);
 
-        uint32_t packet_id = UINT32_CODEC.decode(packet_id_buffer);
+    // uint32_t packet_id = UINT32_CODEC.decode(packet_id_buffer);
 
-        std::cout << "PACKET ID: " << packet_id << std::endl;
+    // std::cout << "PACKET ID: " << packet_id << std::endl;
 
-        return true;
-    });
+    // return true;
+    // });
 
     std::cout << "[#] Tworzenie socketu..." << std::endl;
 

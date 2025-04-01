@@ -3,31 +3,30 @@
 #include <strings.h>
 #include <unistd.h>
 
-server::server(uint32_t address, uint16_t port) {
+#include <iostream>
+
+template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* E0>
+server<T, E0>::server(uint32_t address, uint16_t port) {
     this->address = address;
     this->port = port;
 }
 
-server::~server() {
+template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* E0>
+server<T, E0>::~server() {
 }
 
-void server::set_handling_function(handle_fn handle_fn) {
-    this->connection_handle_fn = std::move(handle_fn);
-}
-
-void server::set_client_create_function(client_fn client_fn) {
-    this->client_create_fn = std::move(client_fn);
-}
-
-uint32_t server::get_address() const {
+template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* E0>
+uint32_t server<T, E0>::get_address() const {
     return this->address;
 }
 
-uint16_t server::get_port() const {
+template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* E0>
+uint16_t server<T, E0>::get_port() const {
     return this->port;
 }
 
-bool server::create_socket() {
+template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* E0>
+bool server<T, E0>::create_socket() {
     this->sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (sockfd == -1) return false;
@@ -41,17 +40,20 @@ bool server::create_socket() {
     return true;
 }
 
-bool server::bind_address() {
+template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* E0>
+bool server<T, E0>::bind_address() {
     return bind(this->sockfd,
                 reinterpret_cast<sockaddr*>(&this->server_address),
                 sizeof(this->server_address)) == 0;
 }
 
-bool server::start_listen() const {
+template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* E0>
+bool server<T, E0>::start_listen() const {
     return listen(this->sockfd, 5) == 0;
 }
 
-void server::start_listen_thread() {
+template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* E0>
+void server<T, E0>::start_listen_thread() {
     this->is_running = true;
 
     this->listening_thread = std::thread([&] {
@@ -60,8 +62,6 @@ void server::start_listen_thread() {
             socklen_t len;
 
             int connfd = accept(sockfd, reinterpret_cast<sockaddr*>(&cli), &len);
-
-            // std::cout << connfd << std::endl;
 
             if (connfd < 0) continue;
 
@@ -72,18 +72,21 @@ void server::start_listen_thread() {
     this->listening_thread.join();
 }
 
-void server::handle_connection(int connfd, sockaddr_in client_address,
+template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* E0>
+void server<T, E0>::handle_connection(int connfd, sockaddr_in client_address,
                                socklen_t address_length) {
-    this->client_map.run([&](std::unordered_map<int, client>& value) {
-        value.emplace(connfd, this->client_create_fn(connfd, client_address));
+    T client = this->create_client(connfd, client_address);
+
+    this->client_map.run([&](std::unordered_map<int, T>& value) {
+        value.emplace(connfd, client);
     });
 
     std::thread connection_thread([&] {
         while (this->is_running) {
-            bool result = connection_handle_fn(connfd, client_address, address_length);
+            bool result = handle_client(client);
 
             if (!result) {
-                this->client_map.run([&](std::unordered_map<int, client>& value) {
+                this->client_map.run([&](std::unordered_map<int, T>& value) {
                     value.erase(connfd);
                 });
                 break;
@@ -94,7 +97,8 @@ void server::handle_connection(int connfd, sockaddr_in client_address,
     connection_thread.join();
 }
 
-void server::stop() {
+template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* E0>
+void server<T, E0>::stop() {
     this->is_running = false;
     close(this->sockfd);
 }

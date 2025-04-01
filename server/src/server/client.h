@@ -16,6 +16,14 @@ public:
     ssize_t send(const bytebuf& buffer) const {
         return write(this->connfd, buffer.to_raw().get(), buffer.size());
     }
+
+    [[nodiscard]] int get_connfd() const {
+        return this->connfd;
+    }
+
+    [[nodiscard]] sockaddr_in get_address() const {
+        return this->address;
+    }
 };
 
 

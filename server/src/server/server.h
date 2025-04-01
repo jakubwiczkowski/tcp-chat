@@ -7,10 +7,10 @@
 #include <thread>
 
 #include "client.h"
+#include "src/chat/chat_client.h"
 #include "src/sync/sync.h"
 
-#define SA struct sockaddr
-
+template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* = nullptr>
 class server {
 public:
     typedef std::function<bool(int, sockaddr_in, socklen_t)> handle_fn;
@@ -31,14 +31,14 @@ private:
 
     std::atomic_bool is_running = false;
 
-    synced<std::unordered_map<int, client>> client_map;
+    synced<std::unordered_map<int, T>> client_map;
 
 public:
     server(uint32_t address, uint16_t port);
-    ~server();
+    virtual ~server();
 
-    void set_handling_function(handle_fn handle_fn);
-    void set_client_create_function(client_fn client_fn);
+    virtual bool handle_client(T& client) = 0;
+    virtual T create_client(int connfd, sockaddr_in addr) = 0;
 
     [[nodiscard]] uint32_t get_address() const;
     [[nodiscard]] uint16_t get_port() const;
@@ -53,6 +53,6 @@ public:
     void stop();
 };
 
-
+template class server<chat_client>;
 
 #endif //SERVER_H
