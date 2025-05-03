@@ -56,7 +56,10 @@ void client::receive_loop() {
             ssize_t read_result = read(this->sockfd, packet_length_buffer_raw,
                                        sizeof(packet_length_buffer_raw));
 
-            if (read_result == -1 || read_result == 0) return;
+            if (read_result == -1 || read_result == 0) {
+                stop();
+                return;
+            }
 
             bytebuf packet_length_buffer(packet_length_buffer_raw, read_result);
             uint32_t packet_length = UINT32_CODEC.decode(packet_length_buffer);
@@ -112,6 +115,10 @@ void client::send_loop() {
         }
     });
     send_loop.join();
+}
+
+bool client::is_client_running() const {
+    return this->is_running;
 }
 
 void client::stop() {

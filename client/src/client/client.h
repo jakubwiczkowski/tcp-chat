@@ -21,6 +21,8 @@ public:
     void receive_loop();
     void send_loop();
 
+    bool is_client_running() const;
+
     void stop();
 };
 

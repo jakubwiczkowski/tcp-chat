@@ -1,14 +1,8 @@
 #include <iostream>
 #include <thread>
 
-#include <arpa/inet.h> // inet_addr()
-#include <netdb.h>
-#include <stdio.h>
-#include <cstdlib>
-#include <string.h>
-#include <strings.h> // bzero()
-#include <sys/socket.h>
-#include <unistd.h> // read(), write(), close()
+#include <arpa/inet.h>
+#include <unistd.h>
 
 #include "src/client/client.h"
 #include "src/codec/uint32_codec.h"
@@ -55,7 +49,7 @@ int main() {
     std::thread chat_thread = std::thread([&] {
         std::string input;
 
-        while (true) {
+        while (client.is_client_running()) {
             std::getline(std::cin, input);
 
             if (input == "exit") {
