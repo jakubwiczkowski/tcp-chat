@@ -25,9 +25,10 @@ class server {
     std::atomic_bool is_running = false;
 
     logger server_logger{};
-    synced<std::unordered_map<int, T>> client_map;
 
 public:
+    synced<std::unordered_map<int, T>> client_map;
+
     server(uint32_t address, uint16_t port);
     virtual ~server();
 

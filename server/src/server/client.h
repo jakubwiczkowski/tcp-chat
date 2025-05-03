@@ -6,6 +6,9 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
+#include "src/codec/uint32_codec.h"
+#include "src/packet/packet.h"
+
 
 class client {
     int connfd;
@@ -25,6 +28,17 @@ public:
         return write(this->connfd, buffer.to_raw().get(), buffer.size());
     }
 
+    void send_packet(std::unique_ptr<packet> to_send) {
+        bytebuf buffer;
+        to_send->write(buffer);
+
+        bytebuf final_buffer;
+        UINT32_CODEC.encode(final_buffer, buffer.size());
+        final_buffer.write(buffer);
+
+        send(final_buffer);
+    }
+
     [[nodiscard]] int get_connfd() const {
         return this->connfd;
     }
@@ -33,12 +47,12 @@ public:
         return this->address;
     }
 
-    [[nodiscard]] std::string get_address_readable() const {
+    [[nodiscard]] std::string get_address_readable() {
         return this->address_human_readable;
     }
 
-    static std::string sockaddr_to_string(const sockaddr_in& addr) {
-        char ipStr[INET_ADDRSTRLEN];
+    static std::string sockaddr_to_string(const sockaddr_in addr) {
+        char ipStr[INET_ADDRSTRLEN] = {};
         inet_ntop(AF_INET, &addr.sin_addr, ipStr, INET_ADDRSTRLEN);
         return std::string(ipStr) + ":" + std::to_string(ntohs(addr.sin_port));
     }

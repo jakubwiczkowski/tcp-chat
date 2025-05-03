@@ -11,14 +11,14 @@ public:
     std::string decode(bytebuf& buffer) const override {
         // strings are prepended with uint32_t length
 
-        if (buffer.remaining() < 5) {
-            throw std::out_of_range("Buffer size not enough");
+        if (buffer.remaining() < 4) {
+            throw std::out_of_range("Buffer size not enough (to read length)");
         }
 
         uint32_t length = UINT32_CODEC.decode(buffer);
 
         if (buffer.remaining() < length) {
-            throw std::out_of_range("Buffer size not enough");
+            throw std::out_of_range("Buffer size not enough (no space in buffer)");
         }
 
         std::string result;

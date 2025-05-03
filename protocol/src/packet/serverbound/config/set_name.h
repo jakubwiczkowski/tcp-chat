@@ -13,7 +13,7 @@ class set_name final : public packet {
 
 public:
     set_name(bytebuf& buffer) {
-        this->packet_id = UINT32_CODEC.decode(buffer);
+        // this->packet_id = UINT32_CODEC.decode(buffer);
         this->username = STRING_CODEC.decode(buffer);
     }
 

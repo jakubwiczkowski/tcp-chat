@@ -14,3 +14,7 @@ std::string chat_client::get_username(){
 
     return this->username;
 }
+
+void chat_client::set_username(std::string username) {
+    this->username = username;
+}

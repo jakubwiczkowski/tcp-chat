@@ -3,20 +3,25 @@
 #include <cstdint>
 #include <queue>
 
+#include "src/logger/logger.h"
 #include "src/packet/packet.h"
 #include "src/sync/sync.h"
 
 class client {
     int sockfd;
+    bool is_running = false;
 
-    synced<std::queue<packet>> packet_queue = {};
+    logger client_logger{};
+    synced<std::queue<std::unique_ptr<packet>>> packet_queue = {};
 public:
     explicit client(uint32_t address, uint16_t port);
 
-    void send_packet(packet& packet);
+    void send_packet(std::unique_ptr<packet> to_send);
 
     void receive_loop();
     void send_loop();
+
+    void stop();
 };
 
 

@@ -10,7 +10,9 @@
 #include <sys/socket.h>
 #include <unistd.h> // read(), write(), close()
 
+#include "src/client/client.h"
 #include "src/codec/uint32_codec.h"
+#include "src/packet/serverbound/chat/send_message.h"
 #include "src/packet/serverbound/config/set_name.h"
 
 #define MAX 80
@@ -18,7 +20,6 @@
 #define SA struct sockaddr
 
 void func(int sockfd) {
-    // uint32_t packet_id = 15012;
     bytebuf buffer;
 
     auto set_name_packet = config::serverbound::set_name("test");
@@ -39,34 +40,41 @@ void func(int sockfd) {
 }
 
 int main() {
-    int sockfd, connfd;
-    struct sockaddr_in servaddr, cli;
+    std::string username;
 
-    // socket create and verification
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1) {
-        printf("socket creation failed...\n");
-        exit(0);
-    } else
-        printf("Socket successfully created..\n");
-    bzero(&servaddr, sizeof(servaddr));
+    client client(inet_addr("127.0.0.1"), 45678);
 
-    // assign IP, PORT
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    servaddr.sin_port = htons(PORT);
+    std::cout << "[?] Podaj nazwe uzytkownika: ";
+    std::cin >> username;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    // connect the client socket to server socket
-    if (connect(sockfd, (SA*)&servaddr, sizeof(servaddr))
-        != 0) {
-        printf("connection with the server failed...\n");
-        exit(0);
-    } else
-        printf("connected to the server..\n");
+    std::unique_ptr<packet> to_send =
+                std::make_unique<config::serverbound::set_name>(username);
+    client.send_packet(std::move(to_send));
 
-    // function for chat
-    func(sockfd);
+    std::thread chat_thread = std::thread([&] {
+        std::string input;
 
-    // close the socket
-    close(sockfd);
+        while (true) {
+            std::getline(std::cin, input);
+
+            if (input == "exit") {
+                client.stop();
+                break;
+            }
+
+            std::unique_ptr<packet> to_send =
+                std::make_unique<chat::serverbound::send_message>(input);
+
+            client.send_packet(std::move(to_send));
+            //TODO: du stuff
+        }
+    });
+
+    client.receive_loop();
+    client.send_loop();
+
+    chat_thread.join();
+    // // close the socket
+    // close(sockfd);
 }

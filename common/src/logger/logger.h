@@ -3,7 +3,6 @@
 
 #include <mutex>
 #include <string>
-#include <thread>
 
 
 class logger {

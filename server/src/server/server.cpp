@@ -73,8 +73,8 @@ void server<T, E0>::start_listen_thread() {
 
     this->listening_thread = std::thread([&] {
         while (this->is_running) {
-            sockaddr_in cli;
-            socklen_t len;
+            sockaddr_in cli = {};
+            socklen_t len = sizeof(cli);
 
             int connfd = accept(sockfd, reinterpret_cast<sockaddr*>(&cli), &len);
 
@@ -92,6 +92,8 @@ void server<T, E0>::start_listen_thread() {
 template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* E0>
 void server<T, E0>::handle_connection(int connfd, sockaddr_in client_address,
                                socklen_t address_length) {
+    this->get_logger().log(logger::level::INFO, "Establishing new connection...");
+
     T client = this->create_client(connfd, client_address, address_length);
 
     this->client_map.run([&](std::unordered_map<int, T>& value) {
@@ -102,14 +104,18 @@ void server<T, E0>::handle_connection(int connfd, sockaddr_in client_address,
         "Established connection with connfd " + std::to_string(connfd) +
         " (" + client.get_address_readable() + ")");
 
-    std::thread connection_thread([&] {
+    std::thread connection_thread([connfd, this] {
+        T& connection_client = this->client_map.run_and_return([connfd](std::unordered_map<int, T>& value) -> T& {
+            return value.at(connfd);
+        });
+
         while (this->is_running) {
-            bool result = handle_client(client);
+            bool result = handle_client(connection_client);
 
             if (!result) {
                 this->get_logger().log(logger::level::INFO,
                     "Connection with connfd " + std::to_string(connfd) +
-                    " (" + client.get_address_readable() + ") closed.");
+                    " (" + connection_client.get_address_readable() + ") closed.");
                 this->client_map.run([&](std::unordered_map<int, T>& value) {
                     value.erase(connfd);
                 });
@@ -118,7 +124,7 @@ void server<T, E0>::handle_connection(int connfd, sockaddr_in client_address,
         }
     });
 
-    connection_thread.join();
+    connection_thread.detach();
 }
 
 template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* E0>

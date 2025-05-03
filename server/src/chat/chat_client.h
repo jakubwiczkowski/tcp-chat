@@ -20,6 +20,7 @@ public:
     void set_state(state next_state);
 
     std::string get_username();
+    void set_username(std::string username);
 };
 
 

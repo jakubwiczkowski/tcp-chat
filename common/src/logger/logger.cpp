@@ -2,6 +2,7 @@
 
 #include <iomanip>
 #include <iostream>
+#include <thread>
 
 void logger::log(const level level, const std::string& message) {
     std::lock_guard lock{this->logger_mutex};

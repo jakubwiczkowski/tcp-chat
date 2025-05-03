@@ -13,7 +13,7 @@ public:
 
     virtual void write(bytebuf& buffer) = 0;
 
-    virtual uint32_t get_packet_id() const = 0;
+    [[nodiscard]] virtual uint32_t get_packet_id() const = 0;
 };
 
 
