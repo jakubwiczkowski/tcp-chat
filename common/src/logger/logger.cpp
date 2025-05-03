@@ -1,10 +1,12 @@
 #include "logger.h"
 
+#include <iomanip>
 #include <iostream>
 
 void logger::log(const level level, const std::string& message) {
     std::lock_guard lock{this->logger_mutex};
-    std::cout << get_timestamp() << " [tid:" << get_thread_id() << "] [" << level_to_string(level) << "] " << message << std::endl;
+    std::cout << get_timestamp() << " [tid:" << get_thread_id() << "] ["
+              << level_to_string(level) << "] " << message << std::endl;
 }
 
 std::string logger::get_timestamp() const {

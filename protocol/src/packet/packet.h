@@ -9,7 +9,7 @@
 class packet {
 public:
     virtual ~packet() = default;
-    explicit packet(bytebuf& buffer);
+    explicit packet() = default;
 
     virtual void write(bytebuf& buffer) = 0;
 

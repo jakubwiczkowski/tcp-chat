@@ -39,45 +39,23 @@ int main(int argc, char* argv[]) {
 
     if (argc >= 2) {
         default_address = inet_pton(AF_INET, argv[1], &default_address);
-        // std::cout << "[#] Adres: " << argv[1] << " (" << default_address << ")" << std::endl;
 
-        if (argc == 3) {
+        if (argc == 3)
             default_port = atoi(argv[2]);
-            // std::cout << "[#] Port: " << default_port << std::endl;
-        }
     }
 
     chat_server server(default_address, default_port);
 
-    // std::cout << "[#] Tworzenie socketu..." << std::endl;
-
-    if (!server.create_socket()) {
-        // std::cout << "[!] Nie udało się stworzyć socketu!" << std::endl;
+    if (!server.create_socket())
         return 1;
-    }
 
-    // std::cout << "[#] Socket stworzony pomyślnie!" << std::endl;
-
-    // std::cout << "[#] Bindowanie adresu..." << std::endl;
-
-    if (!server.bind_address()) {
-        // std::cout << "[!] Nie udało się zbindować adresu!" << std::endl;
+    if (!server.bind_address())
         return 1;
-    }
 
-    // std::cout << "[#] Adres zbindowany pomyślnie!" << std::endl;
-
-    // std::cout << "[#] Rozpoczynanie nasłuchiwania..." << std::endl;
-
-    if (!server.start_listen()) {
-        // std::cout << "[!] Nie udało się zacząć nasłuchiwać!" << std::endl;
+    if (!server.start_listen())
         return 1;
-    }
-
-    // std::cout << "[#] Pomyślnie rozpoczęto nasłuchiwanie!" << std::endl;
 
     server.start_listen_thread();
-
     server.stop();
 
     return 0;
