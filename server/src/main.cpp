@@ -12,28 +12,6 @@
 
 #include "chat/chat_server.h"
 #include "server/server.h"
-#include "src/codec/uint32_codec.h"
-
-// void test() {
-//     for (uint32_t test = 891264; test < 891264 + 100; test++) {
-//         bytebuf buffer(4);
-//         UINT32_CODEC.encode(buffer, test);
-//
-//         std::cout << "tested value: " << std::dec << test << " (" << std::hex <<
-//             test << ")" << std::endl;
-//         std::cout << "byte representation: ";
-//         for (int i = 0; i < 4; i++) {
-//             std::cout << std::hex << std::setw(2) << std::setfill('0') <<
-//                 static_cast<unsigned int>(buffer[i]) << " ";
-//         }
-//         std::cout << std::endl;
-//
-//         uint32_t decoded = UINT32_CODEC.decode(buffer);
-//
-//         std::cout << "decoded: " << std::dec << decoded << std::endl;
-//         std::cout << (decoded == test) << std::endl << std::endl;
-//     }
-// }
 
 std::function<void(int)> shutdown_handler;
 void signal_handler(int signal) { shutdown_handler(signal); }
