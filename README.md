@@ -34,15 +34,15 @@ również znajdują się w submodule `protocol`.
 
 ### Klient
 
-Klient czatu używa dwa wątki - jeden jest do pobierania wiadomości od użytkownika i odsyłaniu tych wiadomości do serwera,
-a drugi przetwarza kolejkę pakietów do wysłania. Oba wątki działają tak długo, jak klient będzie połączony z serwerem.
+Klient czatu używa jednego wątku - do pobierania wiadomości od użytkownika i odsyłaniu tych wiadomości do serwera. Wątki
+działają tak długo, jak jest połączenie z serwerem.
 
 ### Serwer
 
 Serwer działa na wielu wątkach. Najważniejszym jest wątek nasłuchiwania połączeń, gdyż działa on cały czas w tle
 aby umożliwić nowym użytkownikom połączenie się. Każdy użytkownik po pomyślnym połączeniu dostaje też swój wątek,
 który ma za zadanie przetwarzać wysyłane do socketu przez klienta dane. Dzięki przydzieleniu każdemu użytkownikowi swojego
-wątku możliwe jest utrzymywanie połączeń z wieloma użytkownikami na raz.
+wątku możliwe jest utrzymywanie połączeń z wieloma użytkownikami naraz.
 
 ## Sekcje krytyczne
 
@@ -50,25 +50,7 @@ Sekcje krytyczne zostały rozwiązane w inny sposób niż standardowo, gdyż zos
 klasa jest wrapperem na obojętnie jaką zmienną i pozwala ona na dotarcie i modyfikacje informacji w niej zawartej w
 sposób bezpieczny.
 
-1. Sekcja dodawania pakietów do kolejki wysyłania
-```c++
-void client::send_packet(std::unique_ptr<packet> to_send) {
-    this->packet_queue.run(
-        [to_send = std::move(to_send)]
-    (std::queue<std::unique_ptr<packet>>& queue) mutable {
-            queue.push(std::move(to_send));
-        });
-}
-```
-2. Sekcja pobierania pakietu z kolejki wysyłania
-```c++
-this->packet_queue.run(
-    [&](std::queue<std::unique_ptr<packet>>& queue) mutable {
-        to_send = std::move(queue.front());
-        queue.pop();
-    });
-```
-3. Sekcja wysyłania pakietu z wiadomością do wszystkich połączonych klientów
+1. Sekcja wysyłania pakietu z wiadomością do wszystkich połączonych klientów
 ```c++
 this->client_map.run([&client, &send_message_packet](std::unordered_map<int, chat_client>& value) {
      for (auto [_, target_client]: value) {
@@ -79,13 +61,13 @@ this->client_map.run([&client, &send_message_packet](std::unordered_map<int, cha
      }
 });
 ```
-4. Sekcja dodawania klienta do mapy połączonych klientów
+2. Sekcja dodawania klienta do mapy połączonych klientów
 ```c++
 this->client_map.run([&](std::unordered_map<int, T>& value) {
     value.emplace(connfd, client);
 });
 ```
-5. Sekcja usuwania klienta z mapy połączonych klientów
+3. Sekcja usuwania klienta z mapy połączonych klientów
 ```c++
 this->client_map.run([&](std::unordered_map<int, T>& value) {
     value.erase(connfd);
