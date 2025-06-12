@@ -16,7 +16,7 @@ class client {
 public:
     explicit client(uint32_t address, uint16_t port);
 
-    void send_packet(std::unique_ptr<packet> to_send);
+    void send_packet(const packet& to_send) const;
 
     void receive_loop();
     void send_loop();

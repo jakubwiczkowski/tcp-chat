@@ -40,13 +40,16 @@ client::client(uint32_t address, uint16_t port) {
     this->is_running = true;
 }
 
-void client::send_packet(std::unique_ptr<packet> to_send) {
-    this->packet_queue.run(
-        [to_send = std::move(to_send)]
-    (std::queue<std::unique_ptr<packet>>& queue) mutable {
-            queue.push(std::move(to_send));
-        }
-        );
+void client::send_packet(const packet& to_send) const {
+    bytebuf buffer;
+    to_send.write(buffer);
+
+    bytebuf final_buffer;
+    UINT32_CODEC.encode(final_buffer, buffer.size());
+    final_buffer.write(buffer);
+
+    write(sockfd, final_buffer.to_raw().get(),
+                   final_buffer.size());
 }
 
 void client::receive_loop() {
@@ -91,30 +94,7 @@ void client::receive_loop() {
 }
 
 void client::send_loop() {
-    std::thread send_loop = std::thread([&] {
-        while (this->is_running) {
-            if (this->packet_queue.get().empty()) continue;
 
-            std::unique_ptr<packet> to_send;
-
-            this->packet_queue.run(
-                [&](std::queue<std::unique_ptr<packet>>& queue) mutable {
-                    to_send = std::move(queue.front());
-                    queue.pop();
-                });
-
-            bytebuf buffer;
-            to_send->write(buffer);
-
-            bytebuf final_buffer;
-            UINT32_CODEC.encode(final_buffer, buffer.size());
-            final_buffer.write(buffer);
-
-            auto x = write(sockfd, final_buffer.to_raw().get(),
-                           final_buffer.size());
-        }
-    });
-    send_loop.join();
 }
 
 bool client::is_client_running() const {

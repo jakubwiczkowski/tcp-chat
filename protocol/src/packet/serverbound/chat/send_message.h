@@ -23,7 +23,7 @@ public:
     ~send_message() override {
     }
 
-    void write(bytebuf& buffer) override {
+    void write(bytebuf& buffer) const override {
         UINT32_CODEC.encode(buffer, this->packet_id);
         STRING_CODEC.encode(buffer, this->message);
     }

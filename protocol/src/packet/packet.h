@@ -11,7 +11,7 @@ public:
     virtual ~packet() = default;
     explicit packet() = default;
 
-    virtual void write(bytebuf& buffer) = 0;
+    virtual void write(bytebuf& buffer) const = 0;
 
     [[nodiscard]] virtual uint32_t get_packet_id() const = 0;
 };
