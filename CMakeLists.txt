@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
 project(tcp_chat)
-enable_testing()
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -14,6 +13,8 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(Catch2)
+
+include(CTest)
 
 add_subdirectory(common)
 add_subdirectory(protocol)
