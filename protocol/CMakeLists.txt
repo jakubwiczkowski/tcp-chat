@@ -25,16 +25,6 @@ target_include_directories(protocol PUBLIC include)
 set_target_properties(protocol PROPERTIES LINKER_LANGUAGE CXX)
 
 if(BUILD_TESTING)
-    Include(FetchContent)
-
-    FetchContent_Declare(
-            Catch2
-            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-            GIT_TAG        v3.8.1
-    )
-
-    FetchContent_MakeAvailable(Catch2)
-
     add_executable(protocol_tests tests/test.cpp)
     target_link_libraries(protocol_tests PRIVATE Catch2::Catch2WithMain protocol)
 
