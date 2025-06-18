@@ -24,10 +24,15 @@ jobs:
 #        if: steps.linter.outputs.checks-failed > 0
 #        run: exit 1
 
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     env:
       BUILD_TYPE: Release
+
+    strategy:
+      matrix:
+        module: [ "protocol" ]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,3 +42,6 @@ jobs:
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Test ${{ matrix.module }}
+        run: ./build/${{ matrix.module }}/tests --order rand --warn NoAssertions
