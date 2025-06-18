@@ -33,8 +33,10 @@ bool chat_server::handle_client(chat_client& client) {
             client.set_username(set_name_packet.get_username());
 
             this->get_logger().log(logger::level::INFO, "Client " +
-                std::to_string(client.get_connfd()) + " (" + client.get_address_readable() + ") uses username: " +
-                set_name_packet.get_username());
+                                       std::to_string(client.get_connfd()) +
+                                       " (" + client.get_address_readable() +
+                                       ") uses username: " +
+                                       set_name_packet.get_username());
 
             break;
         }
@@ -44,16 +46,23 @@ bool chat_server::handle_client(chat_client& client) {
             chat::serverbound::send_message send_message_packet(data_buffer);
 
             this->get_logger().log(logger::level::INFO,
-                client.get_username() + " (" + client.get_address_readable() + "): " + send_message_packet.get_message());
+                                   client.get_username() + " (" + client.
+                                   get_address_readable() + "): " +
+                                   send_message_packet.get_message());
 
-            this->client_map.run([&client, &send_message_packet](std::unordered_map<int, chat_client>& value) {
-                 for (auto [_, target_client]: value) {
-                     std::unique_ptr<chat::clientbound::send_message> to_send =
-                         std::make_unique<chat::clientbound::send_message>(client.get_username(), send_message_packet.get_message());
+            this->client_map.run(
+                [&client, &send_message_packet](
+                std::unordered_map<int, chat_client>& value) {
+                    for (auto [_, target_client] : value) {
+                        std::unique_ptr<chat::clientbound::send_message> to_send
+                            =
+                            std::make_unique<chat::clientbound::send_message>(
+                                client.get_username(),
+                                send_message_packet.get_message());
 
-                     target_client.send_packet(std::move(to_send));
-                 }
-            });
+                        target_client.send_packet(std::move(to_send));
+                    }
+                });
 
             break;
         }
@@ -69,6 +78,7 @@ chat_client chat_server::create_client(const int connfd,
                                        const sockaddr_in addr,
                                        const socklen_t addr_len) {
     this->get_logger().log(logger::level::INFO,
-        "Created client with connfd " + std::to_string(connfd));
+                           "Created client with connfd " + std::to_string(
+                               connfd));
     return chat_client(connfd, addr, addr_len);
 }

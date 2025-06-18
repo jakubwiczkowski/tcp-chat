@@ -10,10 +10,13 @@ add_library(protocol STATIC
         include/protocol/bytebuf/bytebuf.h
         include/protocol/packet/packet.h
         include/protocol/packet/state.h
+        include/protocol/packet/clientbound/chat/send_message.h
         src/packet/clientbound/chat/send_message.cpp
+        include/protocol/packet/clientbound/config/acknowledge_name.h
         src/packet/clientbound/config/acknowledge_name.cpp
         include/protocol/packet/serverbound/chat/send_message.h
         src/packet/serverbound/chat/send_message.cpp
+        include/protocol/packet/serverbound/config/set_name.h
         src/packet/serverbound/config/set_name.cpp)
 
 target_include_directories(protocol PRIVATE src)

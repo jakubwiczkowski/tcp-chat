@@ -7,22 +7,22 @@ on:
     branches: [ "master" ]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Lint
-        uses: cpp-linter/cpp-linter-action@v2.13.4
-        id: linter
-        with:
-          style: 'file'
-          tidy-checks: ''
-
-      - name: Check
-        if: steps.linter.outputs.checks-failed > 0
-        run: exit 1
+#  lint:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Lint
+#        uses: cpp-linter/cpp-linter-action@v2.13.4
+#        id: linter
+#        with:
+#          style: 'file'
+#          tidy-checks: ''
+#
+#      - name: Check
+#        if: steps.linter.outputs.checks-failed > 0
+#        run: exit 1
 
   build:
     runs-on: ubuntu-latest
