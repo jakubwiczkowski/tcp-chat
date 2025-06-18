@@ -9,6 +9,7 @@
 #include <thread>
 
 #include "protocol/codec/uint32_codec.h"
+#include "protocol/codec/varint_codec.h"
 #include "protocol/packet/clientbound/chat/send_message.h"
 
 client::client(uint32_t address, uint16_t port) {
@@ -73,7 +74,7 @@ void client::receive_loop() {
             read_result = read(this->sockfd, data.get(), packet_length);
 
             bytebuf data_buffer(data.get(), read_result);
-            uint32_t packet_id = UINT32_CODEC.decode(data_buffer);
+            uint32_t packet_id = UVARINT32_CODEC.decode(data_buffer);
 
             switch (packet_id) {
                 case 1: {

@@ -1,5 +1,7 @@
 #include "protocol/packet/serverbound/config/set_name.h"
 
+#include "protocol/codec/varint_codec.h"
+
 config::serverbound::set_name::set_name(bytebuf& buffer) {
     // this->packet_id = UINT32_CODEC.decode(buffer);
     this->username = STRING_CODEC.decode(buffer);
@@ -10,7 +12,7 @@ config::serverbound::set_name::set_name(std::string username) {
 }
 
 void config::serverbound::set_name::write(bytebuf& buffer) const {
-    UINT32_CODEC.encode(buffer, this->packet_id);
+    UVARINT32_CODEC.encode(buffer, this->packet_id);
     STRING_CODEC.encode(buffer, this->username);
 }
 

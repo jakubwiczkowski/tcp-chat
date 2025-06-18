@@ -2,6 +2,7 @@
 
 #include "chat_client.h"
 #include "protocol/codec/uint32_codec.h"
+#include "protocol/codec/varint_codec.h"
 #include "protocol/packet/clientbound/chat/send_message.h"
 #include "protocol/packet/serverbound/chat/send_message.h"
 #include "protocol/packet/serverbound/config/set_name.h"
@@ -22,7 +23,7 @@ bool chat_server::handle_client(chat_client& client) {
     read_result = read(client.get_connfd(), data.get(), packet_length);
 
     bytebuf data_buffer(data.get(), read_result);
-    uint32_t packet_id = UINT32_CODEC.decode(data_buffer);
+    uint32_t packet_id = UVARINT32_CODEC.decode(data_buffer);
 
     switch (packet_id) {
         case 0: {

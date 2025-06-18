@@ -2,6 +2,7 @@
 
 #include "protocol/codec/uint32_codec.h"
 #include "protocol/codec/uint8_codec.h"
+#include "protocol/codec/varint_codec.h"
 
 config::clientbound::acknowledge_name::acknowledge_name(bytebuf& buffer) {
     this->packet_id = UINT32_CODEC.decode(buffer);
@@ -9,7 +10,7 @@ config::clientbound::acknowledge_name::acknowledge_name(bytebuf& buffer) {
 }
 
 void config::clientbound::acknowledge_name::write(bytebuf& buffer) const {
-    UINT32_CODEC.encode(buffer, this->packet_id);
+    UVARINT32_CODEC.encode(buffer, this->packet_id);
     UINT8_CODEC.encode(buffer, this->correct);
 }
 

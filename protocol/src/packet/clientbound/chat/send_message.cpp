@@ -2,6 +2,7 @@
 
 #include "protocol/codec/string_codec.h"
 #include "protocol/codec/uint32_codec.h"
+#include "protocol/codec/varint_codec.h"
 
 chat::clientbound::send_message::send_message(bytebuf& buffer) {
     this->username = STRING_CODEC.decode(buffer);
@@ -14,7 +15,7 @@ chat::clientbound::send_message::send_message(std::string username, std::string 
 }
 
 void chat::clientbound::send_message::write(bytebuf& buffer) const {
-    UINT32_CODEC.encode(buffer, this->packet_id);
+    UVARINT32_CODEC.encode(buffer, this->packet_id);
     STRING_CODEC.encode(buffer, this->username);
     STRING_CODEC.encode(buffer, this->message);
 }
