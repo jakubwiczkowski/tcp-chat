@@ -7,9 +7,9 @@
 #include <thread>
 
 #include "client.h"
-#include "src/chat/chat_client.h"
-#include "src/logger/logger.h"
-#include "src/sync/sync.h"
+#include "chat/chat_client.h"
+#include "common/logger/logger.h"
+#include "common/sync/sync.h"
 
 template<typename T, std::enable_if_t<std::is_base_of_v<client, T>>* = nullptr>
 class server {

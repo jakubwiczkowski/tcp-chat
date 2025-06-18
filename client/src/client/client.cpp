@@ -8,8 +8,8 @@
 #include <iostream>
 #include <thread>
 
-#include "src/codec/uint32_codec.h"
-#include "src/packet/clientbound/chat/send_message.h"
+#include "protocol/codec/uint32_codec.h"
+#include "protocol/packet/clientbound/chat/send_message.h"
 
 client::client(uint32_t address, uint16_t port) {
     sockaddr_in servaddr;

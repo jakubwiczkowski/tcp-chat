@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <queue>
 
-#include "src/logger/logger.h"
-#include "src/packet/packet.h"
-#include "src/sync/sync.h"
+#include "common/logger/logger.h"
+#include "common/sync/sync.h"
+#include "protocol/packet/packet.h"
 
 class client {
     int sockfd;

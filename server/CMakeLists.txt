@@ -11,4 +11,4 @@ add_executable(server src/main.cpp
         src/chat/chat_server.h)
 
 target_link_libraries(server PRIVATE common protocol)
-target_include_directories(server PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(server PRIVATE src)

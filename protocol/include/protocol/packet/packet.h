@@ -3,8 +3,7 @@
 
 #include <cstdint>
 
-#include "src/bytebuf/bytebuf.h"
-
+#include "protocol/bytebuf/bytebuf.h"
 
 class packet {
 public:
@@ -15,7 +14,5 @@ public:
 
     [[nodiscard]] virtual uint32_t get_packet_id() const = 0;
 };
-
-
 
 #endif //PACKET_H

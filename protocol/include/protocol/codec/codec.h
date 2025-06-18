@@ -1,7 +1,7 @@
 #ifndef CODEC_H
 #define CODEC_H
-#include "src/bytebuf/bytebuf.h"
 
+#include "protocol/bytebuf/bytebuf.h"
 
 template<typename T>
 class codec {
@@ -13,7 +13,5 @@ public:
     virtual T decode(bytebuf& buffer) const = 0;
     virtual void encode(bytebuf& buffer, T data) const = 0;
 };
-
-
 
 #endif //CODEC_H

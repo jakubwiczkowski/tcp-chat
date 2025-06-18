@@ -1,4 +1,4 @@
-#include "bytebuf.h"
+#include "protocol/bytebuf/bytebuf.h"
 
 #include <stdexcept>
 

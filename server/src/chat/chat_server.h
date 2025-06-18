@@ -1,8 +1,8 @@
 #ifndef CHAT_SERVER_H
 #define CHAT_SERVER_H
-#include "chat_client.h"
-#include "src/server/server.h"
 
+#include "chat_client.h"
+#include "server/server.h"
 
 class chat_server final : public server<chat_client> {
 public:

@@ -1,10 +1,10 @@
 #include "chat_server.h"
 
 #include "chat_client.h"
-#include "src/codec/uint32_codec.h"
-#include "src/packet/clientbound/chat/send_message.h"
-#include "src/packet/serverbound/chat/send_message.h"
-#include "src/packet/serverbound/config/set_name.h"
+#include "protocol/codec/uint32_codec.h"
+#include "protocol/packet/clientbound/chat/send_message.h"
+#include "protocol/packet/serverbound/chat/send_message.h"
+#include "protocol/packet/serverbound/config/set_name.h"
 
 bool chat_server::handle_client(chat_client& client) {
     byte packet_length_buffer_raw[4];

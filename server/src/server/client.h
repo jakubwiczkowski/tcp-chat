@@ -1,14 +1,13 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "src/bytebuf/bytebuf.h"
+#include "protocol/bytebuf/bytebuf.h"
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 
-#include "src/codec/uint32_codec.h"
-#include "src/packet/packet.h"
-
+#include "protocol/codec/uint32_codec.h"
+#include "protocol/packet/packet.h"
 
 class client {
     int connfd;

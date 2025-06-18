@@ -27,7 +27,7 @@ target_link_libraries(client
 #        PRIVATE ftxui::dom
 #        PRIVATE ftxui::component
 )
-target_include_directories(client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(client PRIVATE src)
 
 #if (EMSCRIPTEN)
 #    string(APPEND CMAKE_CXX_FLAGS " -s USE_PTHREADS")

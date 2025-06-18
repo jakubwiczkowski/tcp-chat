@@ -1,8 +1,8 @@
 #ifndef CHAT_CLIENT_H
 #define CHAT_CLIENT_H
 
-#include "src/packet/state.h"
-#include "src/server/client.h"
+#include "protocol/packet/state.h"
+#include "server/client.h"
 
 class chat_client : public client {
     state current_state = CONFIG;

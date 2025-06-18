@@ -3,9 +3,9 @@
 
 #include <arpa/inet.h>
 
-#include "src/client/client.h"
-#include "src/packet/serverbound/chat/send_message.h"
-#include "src/packet/serverbound/config/set_name.h"
+#include "client/client.h"
+#include "protocol/packet/serverbound/chat/send_message.h"
+#include "protocol/packet/serverbound/config/set_name.h"
 
 int main() {
     std::string username;
