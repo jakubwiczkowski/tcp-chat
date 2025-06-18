@@ -25,23 +25,36 @@ jobs:
 #        run: exit 1
 
   build-and-test:
-    runs-on: ubuntu-latest
-    env:
-      BUILD_TYPE: Release
+    name: Build and Test (${{ matrix.os }} / ${{ matrix.build_type }})
 
     strategy:
       matrix:
-        module: [ "protocol" ]
+        os: [ ubuntu-latest ]
+        build_type: [ Release ]
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      BUILD_DIR: ${{ github.workspace }}/build
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Build Directory
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.BUILD_DIR }}
+          key: ${{ runner.os }}-${{ matrix.build_type }}-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.build_type }}-
+
       - name: Configure CMake
-        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        run: cmake -B ${{ env.BUILD_DIR }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -S ${{ github.workspace }}
 
       - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        run: cmake --build ${{ env.BUILD_DIR }} --config ${{ matrix.build_type }}
 
-      - name: Test ${{ matrix.module }}
-        run: ./build/${{ matrix.module }}/tests --order rand --warn NoAssertions
+      - name: Test
+        working-directory: ${{ env.BUILD_DIR }}
+        run: ctest -C ${{ matrix.build_type }} --output-on-failure
