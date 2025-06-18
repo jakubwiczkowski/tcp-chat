@@ -27,9 +27,9 @@ public:
         return write(this->connfd, buffer.to_raw().get(), buffer.size());
     }
 
-    void send_packet(std::unique_ptr<packet> to_send) {
+    void send_packet(const packet& to_send) {
         bytebuf buffer;
-        to_send->write(buffer);
+        to_send.write(buffer);
 
         bytebuf final_buffer;
         UINT32_CODEC.encode(final_buffer, buffer.size());

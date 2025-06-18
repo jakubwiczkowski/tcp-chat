@@ -1,5 +1,7 @@
 #include "chat_server.h"
 
+#include <ranges>
+
 #include "chat_client.h"
 #include "protocol/codec/uint32_codec.h"
 #include "protocol/codec/varint_codec.h"
@@ -54,14 +56,12 @@ bool chat_server::handle_client(chat_client& client) {
             this->client_map.run(
                 [&client, &send_message_packet](
                 std::unordered_map<int, chat_client>& value) {
-                    for (auto [_, target_client] : value) {
-                        std::unique_ptr<chat::clientbound::send_message> to_send
-                            =
-                            std::make_unique<chat::clientbound::send_message>(
+                    for (auto target_client : value | std::views::values) {
+                        chat::clientbound::send_message to_send(
                                 client.get_username(),
                                 send_message_packet.get_message());
 
-                        target_client.send_packet(std::move(to_send));
+                        target_client.send_packet(to_send);
                     }
                 });
 

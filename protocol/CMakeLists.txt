@@ -18,7 +18,8 @@ add_library(protocol STATIC
         src/packet/serverbound/chat/send_message.cpp
         include/protocol/packet/serverbound/config/set_name.h
         src/packet/serverbound/config/set_name.cpp
-        include/protocol/codec/varint_codec.h)
+        include/protocol/codec/varint_codec.h
+        src/codec/varint_codec.cpp)
 
 target_include_directories(protocol PRIVATE src)
 target_include_directories(protocol PUBLIC include)
